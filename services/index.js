@@ -29,9 +29,10 @@ app.get('/services', (req, res) => {
  * Generate a new service id via randomBytes
  * Extract the name
  * Assign to projects in association to the id generated
+ * Await & Async POST to event bus when a project is created
  * Send the status to projects
  */
-app.post('/services', (req, res) => {
+app.post('/services', async (req, res) => {
   const id = randomBytes(4).toString('hex');
   const { name } = req.body;
 
@@ -39,12 +40,26 @@ app.post('/services', (req, res) => {
     id, name
   }
 
-  // TODO: Send to Event-Bus Functionality
+  await axios.post('http://localhost:4005/events', {
+    type: 'ServiceCreated',
+    data: {
+      id, name
+    }
+  });
 
   res.status(201).send(services[id]);
 });
 
-// TODO: Receive events from event bus
+/**
+ * Route handler to respond when receiving responses from event bus
+ * Responds with status of OK
+ * Response has 2 parameters: received event & request body type
+ */
+app.post('/events', (req, res) => {
+  console.log('Recevied event.', req.body.type);
+
+  res.send({});
+});
 
 // Start server and start listening on port 4000
 app.listen(4000, () => {

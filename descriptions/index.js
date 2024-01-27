@@ -31,9 +31,10 @@ app.get('/services/:id/descriptions', (req, res) => {
  * Extract the description from the req body
  * Init all descriptions associated to the id or send back an empty array if none
  * Push the new id and description into descriptions
+ * Async & Await post to event bus anytime a description is made
  * Send all descriptions with a status of 201
  */
-app.post('/services/:id/descriptions', (req, res) => {
+app.post('/services/:id/descriptions', async (req, res) => {
   const descriptionId = randomBytes(4).toString('hex');
   const { description } = req.body;
 
@@ -43,12 +44,28 @@ app.post('/services/:id/descriptions', (req, res) => {
 
   descriptionsByServiceId[req.params.id] = descriptions;
 
-  // TODO Event Bus Functionality
+  await axios.post('http://localhost:4005/events', {
+    type: 'DescriptionCreated',
+    data: {
+      id: descriptionId,
+      description,
+      serviceId: req.params.id
+    }
+  });
 
   res.status(201).send(descriptions);
 });
 
-// TODO Event Bus Receive Functionality
+/**
+ * Route handler endpoint to send a response back when receiving a response from event-bus
+ * Respond with status of OK
+ * Response has 2 params: received event & response type
+ */
+app.post('/events', (req, res) => {
+  console.log('Receied event.', req.body.type);
+
+  res.send({});
+});
 
 // Start the server and listen on port 4001
 app.listen(4001, () => {
