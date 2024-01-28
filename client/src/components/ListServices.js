@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CreateDescription from './CreateDescription';
+import ListDescriptions from './ListDescriptions';
 
 const ListServices = () => {
   const [services, setServices] = useState({});
@@ -23,6 +25,12 @@ const ListServices = () => {
       >
         <div className='card-body'>
           {service.name}
+          <ListDescriptions
+            descriptions={service.descriptions}
+          />
+          <CreateDescription
+            serviceId={service.id}
+          />
         </div>
       </div>
     );

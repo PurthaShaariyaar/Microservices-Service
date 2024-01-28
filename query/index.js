@@ -38,7 +38,7 @@ app.post('/events', (req, res) => {
   }
 
   if (type === 'DescriptionCreated') {
-    const { id, desription, serviceId } = data;
+    const { id, description, serviceId } = data;
 
     const service = services[serviceId];
 
