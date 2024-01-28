@@ -31,7 +31,9 @@ app.post('/events', (req, res) => {
     console.log(err.message);
   });
 
-  // TODO POST TO QUERY SERVICE
+  axios.post('http://localhost:4002/events', event).catch((err) => {
+    console.log(err.message);
+  });
 });
 
 /**
